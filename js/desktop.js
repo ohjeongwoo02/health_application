@@ -10,6 +10,7 @@ let state = loadState(storage);
 let fromFile = null; // backup file name (view only, never saved)
 let selected = null; // exercise id, null = all
 let query = "";
+let cloud = null; // set when sync.js loads; while signed in, data comes from the cloud instead of localStorage
 
 const fmt = (n) => n.toLocaleString("ko-KR");
 const nameOf = (id) => {
@@ -55,13 +56,16 @@ function render() {
   mount(root,
     h("aside", {},
       h("h1", {}, "기록"),
+      cloud ? h("button", { class: "btn", onclick: cloud.user ? cloud.signOut : cloud.signIn }, cloud.user ? `로그아웃 (${cloud.user.email})` : "Google 로그인 (휴대폰 기록 연동)") : null,
       h("label", { class: "btn" }, "백업 파일 열기", h("input", { type: "file", accept: "application/json,.json", hidden: true, onchange: openFile })),
       fromFile ? h("p", { class: "sub" }, `백업 파일: ${fromFile} (저장되지 않음)`) : null,
       search,
       h("div", { class: "list" }, item(null, "전체", all.length), shownIds.map((id) => item(id, nameOf(id), count(id))))),
     h("main", {},
       all.length === 0
-        ? h("p", { class: "empty" }, "이 브라우저에는 기록이 없습니다. 아이폰 앱의 '운동 관리 → 백업 내보내기' 파일을 열어주세요.")
+        ? h("p", { class: "empty" }, cloud && !cloud.user
+          ? "휴대폰 앱의 '운동 관리 → PC 연동'에서 로그인한 Google 계정으로 왼쪽 위에서 로그인하세요."
+          : "기록이 없습니다. 휴대폰 앱의 '운동 관리 → 백업 내보내기' 파일을 열어도 됩니다.")
         : [
             h("div", { class: "tiles" }, tile("운동한 날", `${s.days}일`), tile("총 세트", fmt(s.sets)), tile("총 볼륨", `${fmt(s.volume)}kg`), tile("마지막 운동", s.last)),
             heatmap(recs, 52),
@@ -72,4 +76,9 @@ function render() {
 
 render();
 // another tab (the app page) saved: re-read, unless viewing a backup file
-window.addEventListener("storage", (e) => { if (e.key === "overload-v1" && !fromFile) { state = loadState(storage); render(); } });
+window.addEventListener("storage", (e) => { if (e.key === "overload-v1" && !fromFile && !cloud?.user) { state = loadState(storage); render(); } });
+import("./sync.js").then((m) => {
+  cloud = m.cloud;
+  m.watch((st) => { if (!fromFile) state = st || loadState(storage); render(); });
+  render();
+}).catch(() => {});

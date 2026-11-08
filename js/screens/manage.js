@@ -59,12 +59,20 @@ export function render(root, ctx) {
   }
 
   const exs = ctx.getState().exercises;
+  const cloud = ctx.getCloud();
   mount(root, 
     h("header", {}, h("a", { class: "back", href: "#/" }, "←"), h("h1", {}, "운동 관리")),
     ...(exs.length ? exs.map((ex) => exerciseCard(ex)) : [h("p", { class: "empty" }, "등록된 운동이 없습니다.")]),
     h("h2", {}, "새 운동 직접 만들기"),
     name,
     h("button", { class: "btn", onclick: addCustom }, "+ 새 운동"),
+    cloud ? [
+      h("h2", {}, "PC 연동"),
+      h("p", { class: "sub" }, cloud.user
+        ? `${cloud.user.email} 로그인됨. 기록이 PC 데스크탑 페이지에 자동으로 올라갑니다.`
+        : "Google로 로그인하면 기록이 PC 데스크탑 페이지(desktop.html)에 자동으로 연동됩니다."),
+      h("button", { class: "btn", onclick: cloud.user ? cloud.signOut : cloud.signIn }, cloud.user ? "로그아웃" : "Google 로그인"),
+    ] : null,
     h("h2", {}, "백업"),
     h("p", { class: "sub" }, "사파리 데이터를 지우면 기록이 사라집니다. 가끔 백업하세요."),
     h("div", { class: "row2" },

@@ -44,3 +44,28 @@ test("importJson validation", () => {
   const st = addRecord(emptyState(), { exerciseId: "a", date: "2026-11-08", sets: [{ weight: 60, reps: 12 }] }, 1);
   assert.deepEqual(importJson(exportJson(st)), st);
 });
+
+import { toCloudDocs, fromCloudDocs, cloudDiff } from "../js/store.js";
+
+test("cloud docs: split by month and merge back", () => {
+  let st = { ...emptyState(), exercises: [{ id: "a", name: "A" }] };
+  st = addRecord(st, { exerciseId: "a", date: "2026-10-31", sets: [{ weight: 60, reps: 10 }] }, 1);
+  st = addRecord(st, { exerciseId: "a", date: "2026-11-01", sets: [{ weight: 62.5, reps: 8 }] }, 2);
+  const docs = toCloudDocs(st);
+  assert.deepEqual(Object.keys(docs).sort(), ["exercises", "m-2026-10", "m-2026-11"]);
+  const back = fromCloudDocs(Object.entries(docs));
+  assert.deepEqual(back.exercises, st.exercises);
+  assert.deepEqual(back.records, st.records);
+  assert.deepEqual(fromCloudDocs([]), emptyState());
+});
+
+test("cloudDiff: only changed docs are sent, removed docs deleted", () => {
+  const st = addRecord(emptyState(), { exerciseId: "a", date: "2026-11-01", sets: [{ weight: 60, reps: 10 }] }, 1);
+  const first = cloudDiff(toCloudDocs(st), {});
+  assert.deepEqual(first.set.sort(), ["exercises", "m-2026-11"]);
+  assert.deepEqual(cloudDiff(toCloudDocs(st), first.next).set, []);
+  const more = addRecord(st, { exerciseId: "a", date: "2026-11-02", sets: [{ weight: 62.5, reps: 8 }] }, 2);
+  assert.deepEqual(cloudDiff(toCloudDocs(more), first.next).set, ["m-2026-11"]);
+  const gone = cloudDiff(toCloudDocs(emptyState()), first.next);
+  assert.deepEqual(gone.del, ["m-2026-11"]);
+});

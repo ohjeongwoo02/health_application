@@ -58,3 +58,34 @@ export function importJson(text) {
     return null;
   }
 }
+
+// Cloud sync shape: exercises in one doc, records split by month so no doc nears Firestore's 1MB cap.
+export function toCloudDocs(state) {
+  const docs = { exercises: { list: state.exercises } };
+  for (const r of state.records) {
+    const id = `m-${r.date.slice(0, 7)}`;
+    (docs[id] ||= { records: [] }).records.push(r);
+  }
+  return docs;
+}
+
+export function fromCloudDocs(entries) {
+  const st = emptyState();
+  for (const [id, data] of entries) {
+    if (id === "exercises") st.exercises = data.list || [];
+    else if (id.startsWith("m-")) st.records.push(...(data.records || []));
+  }
+  return st;
+}
+
+// Which docs changed since the last successful push (sent = {docId: hash}).
+export function cloudDiff(docs, sent) {
+  const hash = (s) => { let x = 5381; for (let i = 0; i < s.length; i++) x = (x * 33 + s.charCodeAt(i)) | 0; return String(x); };
+  const next = {}, set = [], del = [];
+  for (const [id, data] of Object.entries(docs)) {
+    next[id] = hash(JSON.stringify(data));
+    if (sent[id] !== next[id]) set.push(id);
+  }
+  for (const id of Object.keys(sent)) if (!(id in docs)) del.push(id);
+  return { next, set, del };
+}

@@ -14,6 +14,14 @@ const storage = (() => {
 let state = loadState(storage);
 let catalogPromise = null;
 let cleanup = null;
+let push = () => {};
+let cloud = null;
+// cloud sync is optional: offline / not configured -> import fails and the app works as before
+import("./sync.js").then((m) => {
+  cloud = m.cloud;
+  push = m.startPush(storage, () => state);
+  m.cloud.onUser(() => { if (location.hash.startsWith("#/manage")) route(); });
+}).catch(() => {});
 
 function rollDay() {
   const d = todayStr();
@@ -25,7 +33,9 @@ const ctx = {
   setState(next) {
     state = next;
     try { saveState(storage, state); } catch (e) { console.error("save failed", e); }
+    push();
   },
+  getCloud: () => cloud,
   navigate(hash) {
     if (location.hash === hash) route(); else location.hash = hash;
   },
