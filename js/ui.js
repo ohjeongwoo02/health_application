@@ -1,4 +1,5 @@
 import { bodyIconSvg } from "./bodyicon.js";
+import { imageUrl } from "./catalog.js";
 
 export function h(tag, attrs = {}, ...kids) {
   const el = document.createElement(tag);
@@ -28,6 +29,23 @@ export function icon(part) {
   el.className = "icon";
   el.innerHTML = bodyIconSvg(part);
   return el;
+}
+
+// RepDB image if we have one for this exercise, otherwise the body-part icon.
+export function thumb(ex) {
+  const url = imageUrl(ex);
+  if (!url) return icon(ex.bodyPart);
+  const wrap = document.createElement("span");
+  wrap.className = "thumb";
+  const img = document.createElement("img");
+  img.alt = "";
+  img.loading = "lazy";
+  img.crossOrigin = "anonymous";
+  img.referrerPolicy = "no-referrer";
+  img.onerror = () => wrap.replaceChildren(icon(ex.bodyPart));
+  img.src = url;
+  wrap.append(img);
+  return wrap;
 }
 
 export function todayStr() {

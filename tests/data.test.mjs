@@ -25,3 +25,9 @@ test("every exercise has a real Korean name (not just the English fallback)", ()
   const missing = items.filter((i) => !ko[i.id]).map((i) => i.id);
   assert.deepEqual(missing, []);
 });
+
+test("RepDB image names are plain file stems and cover 100+ exercises", () => {
+  const withImg = items.filter((i) => i.repdb);
+  assert.ok(withImg.length >= 100);
+  for (const i of withImg) assert.match(i.repdb, /^[a-z0-9-]+$/, i.id);
+});

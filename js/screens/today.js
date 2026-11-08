@@ -1,4 +1,4 @@
-import { h, exName, icon } from "../ui.js";
+import { h, exName, thumb } from "../ui.js";
 import { lastRecord } from "../store.js";
 import { recommendNextWeight } from "../recommend.js";
 
@@ -11,7 +11,7 @@ export function render(root, ctx) {
       const last = lastRecord(st, ex.id);
       const rec = last ? recommendNextWeight(last.sets, ex) : null;
       return h("a", { class: "card row", href: `#/session/${encodeURIComponent(ex.id)}` },
-        icon(ex.bodyPart),
+        thumb(ex),
         h("div", { class: "grow" },
           h("div", { class: "title" }, exName(ex)),
           h("div", { class: "sub" }, rec == null ? "기록 없음" : `다음 추천: ${rec} kg`)),

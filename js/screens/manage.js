@@ -71,5 +71,6 @@ export function render(root, ctx) {
       h("button", { class: "btn", onclick: doExport }, "백업 내보내기"),
       h("label", { class: "btn" }, "가져오기", h("input", { type: "file", accept: "application/json,.json", hidden: true, onchange: doImport }))),
     dump,
+    h("p", { class: "sub credit" }, "운동 이미지: ", h("a", { href: "https://repdb.co", target: "_blank", rel: "nofollow noopener" }, "Exercise data by RepDB (repdb.co)")),
   );
 }

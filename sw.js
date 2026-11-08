@@ -1,4 +1,4 @@
-const CACHE = "overload-v2";
+const CACHE = "overload-v3";
 const SHELL = [
   "./", "index.html", "manifest.webmanifest", "css/app.css",
   "js/app.js", "js/store.js", "js/recommend.js", "js/catalog.js", "js/timer.js", "js/i18n.js", "js/ui.js", "js/bodyicon.js",
@@ -20,7 +20,7 @@ self.addEventListener("fetch", (e) => {
   if (e.request.method !== "GET") return;
   e.respondWith(
     caches.match(e.request).then((hit) => hit || fetch(e.request).then((res) => {
-      if (res.ok && new URL(e.request.url).origin === location.origin) {
+      if (res.ok && (new URL(e.request.url).origin === location.origin || e.request.destination === "image")) {
         const copy = res.clone();
         caches.open(CACHE).then((c) => c.put(e.request, copy));
       }

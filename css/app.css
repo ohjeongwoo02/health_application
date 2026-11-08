@@ -17,8 +17,13 @@ h2 { font-size: 15px; color: var(--sub); margin: 22px 0 8px; }
 .card { display: block; width: 100%; background: var(--card); border: 1px solid var(--line); border-radius: 12px; padding: 12px; margin: 8px 0; color: var(--text); text-decoration: none; text-align: left; font: inherit; }
 .row, .pick { display: flex; align-items: center; justify-content: space-between; gap: 12px; min-height: 56px; }
 .pick { justify-content: flex-start; }
-.icon { flex: none; display: inline-block; width: 44px; height: 74px; }
-.icon svg { width: 100%; height: 100%; }
+.icon { flex: none; display: grid; place-items: center; width: 64px; height: 64px; }
+.icon svg { height: 64px; width: auto; }
+.thumb { flex: none; width: 64px; height: 64px; border-radius: 10px; overflow: hidden; background: #dff0fb; display: block; }
+.thumb img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.thumb .icon { width: 100%; height: 100%; }
+.credit { margin-top: 24px; }
+.credit a { color: var(--accent); }
 .grow { flex: 1; }
 .title { font-weight: 600; }
 .ko { display: block; color: var(--sub); font-weight: 400; font-size: 13px; }

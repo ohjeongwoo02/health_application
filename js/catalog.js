@@ -17,3 +17,7 @@ export function filterCatalog(items, opts = {}) {
 export function bodyParts(items) {
   return [...new Set(items.map((i) => i.bodyPart))].sort();
 }
+
+export function imageUrl(item) {
+  return item && item.repdb ? `https://exercise-dataset.com/images/flat/${item.repdb}.webp` : null;
+}
