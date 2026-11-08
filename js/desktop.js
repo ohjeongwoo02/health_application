@@ -1,7 +1,7 @@
 // Desktop records viewer (desktop.html): same data as records.html (localStorage or a backup file), wide master-detail layout.
 import { loadState, importJson } from "./store.js";
 import { h, mount } from "./ui.js";
-import { heatmap, chart } from "./charts.js";
+import { heatmap, chart, calendar } from "./charts.js";
 import { summary, recordStats, exerciseHistory, loggedExercises } from "./stats.js";
 
 const root = document.getElementById("dt");
@@ -11,6 +11,7 @@ let fromFile = null; // backup file name (view only, never saved)
 let selected = null; // exercise id, null = all
 let query = "";
 let cloud = null; // set when sync.js loads; while signed in, data comes from the cloud instead of localStorage
+const calView = { ym: null, day: null };
 
 const fmt = (n) => n.toLocaleString("ko-KR");
 const nameOf = (id) => {
@@ -54,20 +55,24 @@ function render() {
   const item = (id, label, n) => h("button", { class: "item", "aria-current": String(selected === id), onclick: () => { selected = id; render(); } }, h("span", {}, label), h("span", {}, n));
   const search = h("input", { class: "search", placeholder: "운동 검색", value: query, oninput: (e) => { query = e.target.value; render(); const i = root.querySelector("input.search"); i.focus(); i.setSelectionRange(query.length, query.length); } });
   mount(root,
+    h("div", { class: "topbar" },
+      h("a", { class: "brand", href: "index.html" }, "운동 기록."),
+      h("div", { class: "acts" },
+        cloud?.user ? h("span", { class: "sub" }, cloud.user.email) : null,
+        cloud ? h("button", { class: cloud.user ? "btn" : "btn primary", onclick: cloud.user ? cloud.signOut : cloud.signIn }, cloud.user ? "로그아웃" : "Google 로그인 (휴대폰 기록 연동)") : null,
+        h("label", { class: "btn" }, "백업 파일 열기", h("input", { type: "file", accept: "application/json,.json", hidden: true, onchange: openFile })))),
     h("aside", {},
-      h("h1", {}, "기록"),
-      cloud ? h("button", { class: "btn", onclick: cloud.user ? cloud.signOut : cloud.signIn }, cloud.user ? `로그아웃 (${cloud.user.email})` : "Google 로그인 (휴대폰 기록 연동)") : null,
-      h("label", { class: "btn" }, "백업 파일 열기", h("input", { type: "file", accept: "application/json,.json", hidden: true, onchange: openFile })),
       fromFile ? h("p", { class: "sub" }, `백업 파일: ${fromFile} (저장되지 않음)`) : null,
       search,
       h("div", { class: "list" }, item(null, "전체", all.length), shownIds.map((id) => item(id, nameOf(id), count(id))))),
     h("main", {},
       all.length === 0
         ? h("p", { class: "empty" }, cloud && !cloud.user
-          ? "휴대폰 앱의 '운동 관리 → PC 연동'에서 로그인한 Google 계정으로 왼쪽 위에서 로그인하세요."
+          ? "휴대폰 앱의 '운동 관리 → PC 연동'에서 로그인한 Google 계정으로 오른쪽 위에서 로그인하세요."
           : "기록이 없습니다. 휴대폰 앱의 '운동 관리 → 백업 내보내기' 파일을 열어도 됩니다.")
         : [
             h("div", { class: "tiles" }, tile("운동한 날", `${s.days}일`), tile("총 세트", fmt(s.sets)), tile("총 볼륨", `${fmt(s.volume)}kg`), tile("마지막 운동", s.last)),
+            calendar(recs, calView, nameOf),
             heatmap(recs, 52),
             selected ? h("section", { class: "panel" }, h("h2", {}, `${nameOf(selected)} · 세션별 최고 중량 (kg)`), chart(exerciseHistory(all, selected))) : null,
             h("section", { class: "panel" }, h("h2", {}, `전체 기록 ${recs.length}건`), logTable(recs)),

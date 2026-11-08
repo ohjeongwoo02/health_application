@@ -1,4 +1,4 @@
-const CACHE = "overload-v10";
+const CACHE = "overload-v11";
 const REPDB = "https://exercise-dataset.com/exercises.json";
 const SHELL = [
   "./", "index.html", "records.html", "desktop.html", "manifest.webmanifest", "css/app.css", "css/dash.css",

@@ -53,3 +53,17 @@ export function loggedExercises(records) {
   for (const r of records) n.set(r.exerciseId, (n.get(r.exerciseId) || 0) + 1);
   return [...n].sort((a, b) => b[1] - a[1]).map(([id]) => id);
 }
+
+// Calendar month "YYYY-MM": leading nulls for the days before the 1st (Sunday-first week), then each date.
+export function monthCells(ym) {
+  const [y, m] = ym.split("-").map(Number);
+  const lead = new Date(y, m - 1, 1).getDay();
+  const n = new Date(y, m, 0).getDate();
+  return [...Array(lead).fill(null), ...Array.from({ length: n }, (_, i) => `${ym}-${String(i + 1).padStart(2, "0")}`)];
+}
+
+export function shiftMonth(ym, delta) {
+  const [y, m] = ym.split("-").map(Number);
+  const d = new Date(y, m - 1 + delta, 1);
+  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}`;
+}

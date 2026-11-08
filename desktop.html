@@ -3,25 +3,36 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#f5f1ea">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@700&display=swap">
   <link rel="stylesheet" href="css/app.css">
   <link rel="stylesheet" href="css/dash.css">
-  <title>기록 (데스크탑)</title>
+  <title>운동 기록</title>
   <style>
-    #dt { display: grid; grid-template-columns: 300px 1fr; gap: 20px; max-width: 1400px; margin: 0 auto; padding: 20px; align-items: start; }
+    #dt { display: grid; grid-template-columns: 260px 1fr; gap: 20px 28px; max-width: 1400px; margin: 0 auto; padding: 20px 28px 40px; align-items: start; }
+    #dt .topbar { grid-column: 1 / -1; display: flex; align-items: center; justify-content: space-between; gap: 12px; padding-bottom: 14px; border-bottom: 2px solid var(--ink); }
+    #dt .brand { font-family: var(--serif); font-size: 26px; font-weight: 700; letter-spacing: -.02em; color: var(--text); text-decoration: none; }
+    #dt .acts { display: flex; align-items: center; gap: 10px; }
+    #dt .acts .btn { min-height: 40px; }
     #dt aside { position: sticky; top: 20px; max-height: calc(100vh - 40px); display: flex; flex-direction: column; gap: 8px; }
-    #dt .list { overflow-y: auto; border: 1px solid var(--line); border-radius: 12px; background: var(--card); }
+    #dt .search { margin: 0; }
+    #dt .list { overflow-y: auto; }
     #dt .item { display: flex; justify-content: space-between; gap: 8px; width: 100%; padding: 9px 12px; border: 0; border-bottom: 1px solid var(--line); background: none; color: var(--text); font: inherit; font-size: 14px; text-align: left; cursor: pointer; }
-    #dt .item:hover { background: var(--bg); }
-    #dt .item[aria-current="true"] { background: var(--accent); color: #fff; }
-    #dt .item span:last-child { opacity: .7; font-variant-numeric: tabular-nums; }
-    #dt main > .panel:first-child, #dt .tiles + .panel { margin-top: 12px; }
-    #dt .tiles { margin-bottom: 0; }
-    #dt table th, #dt table td { text-align: left; padding: 8px 10px; }
+    #dt .item:hover { color: var(--accent); }
+    #dt .item[aria-current="true"] { color: var(--accent); font-weight: 700; box-shadow: inset 3px 0 0 var(--accent); }
+    #dt .item span:last-child { opacity: .6; font-variant-numeric: tabular-nums; }
+    #dt .tiles { margin-bottom: 4px; }
+    #dt .cal { display: grid; grid-template-columns: 1.5fr 1fr; gap: 0 14px; align-items: start; }
+    #dt .cal-d { aspect-ratio: auto; height: 64px; }
+    #dt table th, #dt table td { text-align: left; padding: 9px 10px; }
     #dt table th:nth-child(n+4), #dt table td:nth-child(n+4) { text-align: right; }
     #dt thead th { position: sticky; top: 0; background: var(--card); }
     #dt tbody tr:hover { background: var(--bg); }
     #dt .tablewrap { max-height: 70vh; overflow: auto; }
     .heat span { width: 14px; height: 14px; }
+    @media (max-width: 900px) { #dt { grid-template-columns: 1fr; padding: 16px; } #dt aside { position: static; max-height: none; } #dt .list { max-height: 240px; } #dt .cal { grid-template-columns: 1fr; } }
   </style>
 </head>
 <body>

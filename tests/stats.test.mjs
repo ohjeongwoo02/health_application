@@ -32,3 +32,24 @@ test("exerciseHistory sorts by date and flags PRs", () => {
 test("loggedExercises: most logged first", () => {
   assert.deepEqual(loggedExercises(R), ["bench", "squat"]);
 });
+
+import { monthCells, shiftMonth } from "../js/stats.js";
+
+test("monthCells: Sunday-first padding and month length", () => {
+  const nov = monthCells("2026-11"); // Nov 1 2026 is a Sunday
+  assert.equal(nov[0], "2026-11-01");
+  assert.equal(nov.length, 30);
+  const feb = monthCells("2026-02"); // Feb 1 2026 is a Sunday, 28 days
+  assert.equal(feb.filter(Boolean).length, 28);
+  const mar = monthCells("2026-03"); // Mar 1 2026 is a Sunday too; Apr 1 is a Wednesday
+  assert.equal(mar[0], "2026-03-01");
+  const apr = monthCells("2026-04");
+  assert.deepEqual(apr.slice(0, 4), [null, null, null, "2026-04-01"]);
+  assert.equal(monthCells("2028-02").filter(Boolean).length, 29);
+});
+
+test("shiftMonth crosses years", () => {
+  assert.equal(shiftMonth("2026-12", 1), "2027-01");
+  assert.equal(shiftMonth("2026-01", -1), "2025-12");
+  assert.equal(shiftMonth("2026-11", 0), "2026-11");
+});

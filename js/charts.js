@@ -1,6 +1,6 @@
 // Heatmap and line chart shared by records.html and desktop.html.
 import { h, todayStr } from "./ui.js";
-import { setsPerDay } from "./stats.js";
+import { setsPerDay, monthCells, shiftMonth } from "./stats.js";
 
 const fmt = (n) => n.toLocaleString("ko-KR");
 
@@ -68,5 +68,49 @@ export function chart(hist) {
   el.addEventListener("pointermove", show);
   el.addEventListener("pointerdown", show);
   el.addEventListener("pointerleave", hide);
+  return wrap;
+}
+
+// Month calendar + the picked day's workouts. view = { ym, day } belongs to the caller so it survives re-renders.
+// compact (phone): a dot instead of "N종목" in each day, detail below instead of beside.
+export function calendar(records, view, nameOf, { compact = false } = {}) {
+  const byDay = new Map();
+  for (const r of records) byDay.set(r.date, [...(byDay.get(r.date) || []), r]);
+  const kinds = (list) => new Set(list.map((r) => r.exerciseId)).size;
+  if (!view.day) { const t = todayStr(); view.day = byDay.has(t) ? t : [...byDay.keys()].sort().pop() || t; }
+  if (!view.ym) view.ym = view.day.slice(0, 7);
+  const wrap = h("div", { class: compact ? "cal compact" : "cal" });
+  const go = (patch) => { Object.assign(view, patch); draw(); };
+
+  function draw() {
+    const today = todayStr();
+    const [y, m] = view.ym.split("-");
+    const cells = monthCells(view.ym).map((d) => {
+      if (!d) return h("span", {});
+      const n = kinds(byDay.get(d) || []);
+      return h("button", {
+        class: `cal-d${n ? " has" : ""}${d === today ? " today" : ""}`,
+        "aria-pressed": String(d === view.day), "aria-label": n ? `${d} ${n}종목` : d,
+        onclick: () => go({ day: d }),
+      }, h("b", {}, String(+d.slice(8))), n ? h("i", {}, compact ? null : `${n}종목`) : null);
+    });
+    const list = [...(byDay.get(view.day) || [])].sort((a, b) => a.savedAt - b.savedAt);
+    const [, dm, dd] = view.day.split("-");
+    wrap.replaceChildren(
+      h("section", { class: "panel" },
+        h("div", { class: "cal-head" },
+          h("h2", {}, `${y}년 ${+m}월`),
+          h("div", {},
+            h("button", { class: "cal-nav", "aria-label": "이전 달", onclick: () => go({ ym: shiftMonth(view.ym, -1) }) }, "‹"),
+            h("button", { class: "cal-nav", "aria-label": "다음 달", onclick: () => go({ ym: shiftMonth(view.ym, 1) }) }, "›"))),
+        h("div", { class: "cal-grid" }, ["일", "월", "화", "수", "목", "금", "토"].map((d) => h("span", { class: "cal-dow" }, d)), cells)),
+      h("section", { class: "panel cal-detail" },
+        h("h2", {}, `${+dm}월 ${+dd}일`),
+        h("p", { class: "sub" }, list.length ? `${kinds(list)}종목 · ${list.reduce((a, r) => a + r.sets.length, 0)}세트` : "운동 기록 없음"),
+        list.map((r) => h("div", { class: "cal-ex" },
+          h("div", { class: "title" }, nameOf(r.exerciseId)),
+          h("div", { class: "sub" }, r.sets.map((s) => `${s.weight}kg × ${s.reps}`).join(" · "))))));
+  }
+  draw();
   return wrap;
 }
