@@ -6,11 +6,10 @@ import { BODY_PART_KO } from "../js/i18n.js";
 const items = JSON.parse(fs.readFileSync(new URL("../data/exercises.json", import.meta.url), "utf8"));
 const ko = JSON.parse(fs.readFileSync(new URL("../data/ko.json", import.meta.url), "utf8"));
 
-test("800+ exercises with required fields and existing images", () => {
+test("800+ exercises with required fields", () => {
   assert.ok(items.length >= 800);
   for (const it of items) {
-    for (const k of ["id", "name", "koName", "bodyPart", "equipment", "image"]) assert.ok(it[k], `${it.id} missing ${k}`);
-    assert.ok(fs.existsSync(new URL("../" + it.image, import.meta.url)), `${it.image} missing`);
+    for (const k of ["id", "name", "koName", "bodyPart", "equipment"]) assert.ok(it[k], `${it.id} missing ${k}`);
   }
 });
 

@@ -104,7 +104,7 @@ const WORDS = {
   touches: "터치", towel: "타월", star: "스타", mill: "밀", stomach: "복부", vacuum: "배큠", superman: "슈퍼맨",
   fallout: "폴아웃", svend: "스벤드", tate: "테이트", straddle: "스트래들", tire: "타이어", torso: "상체", trail: "트레일",
   trap: "승모근", underhand: "언더핸드", grab: "그랩", upward: "업워드", vertical: "수직", sissy: "시시", wind: "윈드",
-  sprinting: "스프린트", yoke: "요크", zercher: "저처", "180's": "180도",  world: "월드", greatest: "그레이티스트", bent: "벤트", smr: "(폼롤러)", skipping: "스키핑", "90": "90", "3": "3", "4": "4", "8": "8",
+  sprinting: "스프린트", yoke: "요크", zercher: "저처", "180's": "180도",  halo: "헤일로",  world: "월드", greatest: "그레이티스트", bent: "벤트", smr: "(폼롤러)", skipping: "스키핑", "90": "90", "3": "3", "4": "4", "8": "8",
 };
 
 function translate(name) {
