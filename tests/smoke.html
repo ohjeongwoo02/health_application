@@ -20,9 +20,11 @@ try {
   await sleep(300);
   const app = document.getElementById("app");
   ok("today shows recommendation 65", app.textContent.includes("다음 추천: 65 kg"));
+  ok("today has no stray null", !app.textContent.includes("null"));
   location.hash = "#/session/bench";
   await sleep(100);
   ok("session prefilled 65", app.querySelectorAll("input.num")[0].value === "65");
+  ok("session has no stray null", !app.textContent.includes("null"));
   const nums = app.querySelectorAll("input.num");
   [12, 12, 11, 10].forEach((r, i) => { nums[i * 2 + 1].value = String(r); });
   app.querySelector("input.done").click();
@@ -43,6 +45,9 @@ try {
   ok("manage renders fields", app.querySelectorAll(".grid input").length === 4);
   location.hash = "#/history"; await sleep(100);
   ok("history lists 2 records", app.querySelectorAll(".card").length === 2);
+  ok("history has no stray null", !app.textContent.includes("null"));
+  location.hash = "#/pick"; await sleep(500);
+  ok("picker has no stray null", !app.textContent.includes("null"));
 } catch (e) { out.push("FAIL exception " + e.message + " " + e.stack); }
 document.getElementById("out").textContent = out.join("\n") + "\nDONE";
 </script>

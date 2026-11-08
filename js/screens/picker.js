@@ -1,4 +1,4 @@
-import { h, thumb } from "../ui.js";
+import { h, thumb, mount } from "../ui.js";
 import { filterCatalog, bodyParts } from "../catalog.js";
 import { bodyPartLabel } from "../i18n.js";
 import { defaultSettings } from "../recommend.js";
@@ -30,7 +30,7 @@ export function render(root, ctx) {
   }
 
   function drawChips() {
-    chips.replaceChildren(...["all", ...bodyParts(catalog)].map((p) =>
+    mount(chips, ...["all", ...bodyParts(catalog)].map((p) =>
       h("button", { class: "chip" + (p === part ? " on" : ""), onclick: () => { part = p; shown = PAGE; draw(); } },
         p === "all" ? "전체" : bodyPartLabel(p))));
   }
@@ -42,14 +42,14 @@ export function render(root, ctx) {
       h("button", { class: "card row pick", onclick: () => pick(it) },
         thumb(it),
         h("div", {}, h("div", { class: "title" }, it.name), h("small", { class: "ko" }, it.koName))));
-    list.replaceChildren(
+    mount(list, 
       ...rows,
       found.length === 0 ? h("p", { class: "empty" }, status === "loading" ? "운동 목록을 불러오는 중…" : status === "error" ? "운동 목록을 불러오지 못했습니다. 인터넷 연결을 확인해 주세요." : "검색 결과가 없습니다.") : null,
       found.length > shown ? h("button", { class: "btn", onclick: () => { shown += PAGE; draw(); } }, `더 보기 (${found.length - shown}개 남음)`) : null,
     );
   }
 
-  root.replaceChildren(
+  mount(root, 
     h("header", {}, h("a", { class: "back", href: "#/" }, "←"), h("h1", {}, "운동 추가")),
     input, chips, list,
   );

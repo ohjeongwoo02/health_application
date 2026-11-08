@@ -1,4 +1,4 @@
-import { h, exName, todayStr } from "../ui.js";
+import { h, exName, todayStr, mount } from "../ui.js";
 import { lastRecord, addRecord } from "../store.js";
 import { recommendNextWeight } from "../recommend.js";
 import { createTimer, beep } from "../timer.js";
@@ -68,7 +68,7 @@ export function render(root, ctx) {
 
   for (let i = 0; i < 4; i++) addRow(startWeight);
 
-  root.replaceChildren(
+  mount(root, 
     h("header", {}, h("a", { class: "back", href: "#/" }, "←"), h("h1", {}, exName(ex))),
     h("p", { class: "rec" }, rec == null ? "추천 무게 없음 (첫 기록)" : ["오늘 추천: ", h("b", {}, `${rec} kg`)]),
     last ? h("p", { class: "sub" }, `지난번 ${summary(last.sets)}`) : null,

@@ -1,4 +1,4 @@
-import { h, exName } from "../ui.js";
+import { h, exName, mount } from "../ui.js";
 import { defaultSettings } from "../recommend.js";
 import { exportJson, importJson } from "../store.js";
 
@@ -59,7 +59,7 @@ export function render(root, ctx) {
   }
 
   const exs = ctx.getState().exercises;
-  root.replaceChildren(
+  mount(root, 
     h("header", {}, h("a", { class: "back", href: "#/" }, "←"), h("h1", {}, "운동 관리")),
     ...(exs.length ? exs.map((ex) => exerciseCard(ex)) : [h("p", { class: "empty" }, "등록된 운동이 없습니다.")]),
     h("h2", {}, "새 운동 직접 만들기"),

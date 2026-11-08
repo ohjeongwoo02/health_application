@@ -53,3 +53,8 @@ export function todayStr() {
   const p = (n) => String(n).padStart(2, "0");
   return `${d.getFullYear()}-${p(d.getMonth() + 1)}-${p(d.getDate())}`;
 }
+
+// replaceChildren, but skip null/false/arrays-of-nothing so the browser never prints "null".
+export function mount(parent, ...kids) {
+  parent.replaceChildren(...kids.flat().filter((k) => k != null && k !== false));
+}

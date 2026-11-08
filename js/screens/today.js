@@ -1,11 +1,11 @@
-import { h, exName, thumb } from "../ui.js";
+import { h, exName, thumb, mount } from "../ui.js";
 import { lastRecord } from "../store.js";
 import { recommendNextWeight } from "../recommend.js";
 
 export function render(root, ctx) {
   const st = ctx.getState();
   const list = st.today.exerciseIds.map((id) => st.exercises.find((e) => e.id === id)).filter(Boolean);
-  root.replaceChildren(
+  mount(root, 
     h("header", {}, h("h1", {}, "오늘 운동"), h("p", { class: "sub" }, st.today.date)),
     ...list.map((ex) => {
       const last = lastRecord(st, ex.id);

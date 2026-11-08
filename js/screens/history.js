@@ -1,4 +1,4 @@
-import { h } from "../ui.js";
+import { h, mount } from "../ui.js";
 
 export function render(root, ctx) {
   const st = ctx.getState();
@@ -7,7 +7,7 @@ export function render(root, ctx) {
   const byDate = new Map();
   for (const r of recs) byDate.set(r.date, [...(byDate.get(r.date) || []), r]);
 
-  root.replaceChildren(
+  mount(root, 
     h("header", {}, h("a", { class: "back", href: "#/" }, "←"), h("h1", {}, "기록")),
     byDate.size === 0 ? h("p", { class: "empty" }, "아직 기록이 없습니다.") : null,
     ...[...byDate].map(([date, list]) =>
