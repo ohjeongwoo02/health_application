@@ -1,14 +1,9 @@
 import test from "node:test";
 import assert from "node:assert/strict";
-import fs from "node:fs";
 import { bodyIconSvg, ICON_PARTS } from "../js/bodyicon.js";
 
-const items = JSON.parse(fs.readFileSync(new URL("../data/exercises.json", import.meta.url), "utf8"));
-
-test("every body part in the catalog has its own highlighted icon", () => {
-  const parts = [...new Set(items.map((i) => i.bodyPart))];
-  for (const p of parts) {
-    assert.ok(ICON_PARTS.includes(p), `no icon for ${p}`);
+test("every icon part is a valid, highlighted SVG", () => {
+  for (const p of ICON_PARTS) {
     const svg = bodyIconSvg(p);
     assert.match(svg, /^<svg[^>]*viewBox="0 0 60 100"/);
     assert.ok(svg.includes('class="hl"'), `${p} has no highlight`);

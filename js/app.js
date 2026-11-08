@@ -12,8 +12,7 @@ const storage = (() => {
 })();
 
 let state = loadState(storage);
-let catalog = [];
-let catalogError = false;
+let catalogPromise = null;
 let cleanup = null;
 
 function rollDay() {
@@ -30,8 +29,11 @@ const ctx = {
   navigate(hash) {
     if (location.hash === hash) route(); else location.hash = hash;
   },
-  get catalog() { return catalog; },
-  get catalogError() { return catalogError; },
+  // RepDB exercise list: loaded on first use (2.6MB), then cached by the service worker.
+  getCatalog() {
+    if (!catalogPromise) catalogPromise = loadCatalog(fetch).catch((e) => { catalogPromise = null; throw e; });
+    return catalogPromise;
+  },
   params: [],
 };
 
@@ -50,5 +52,4 @@ function route() {
 
 window.addEventListener("hashchange", route);
 
-try { catalog = await loadCatalog(fetch); } catch { catalogError = true; }
 route();

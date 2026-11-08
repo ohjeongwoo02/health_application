@@ -1,10 +1,5 @@
-// Usage: node scripts/make-ko.mjs  -> writes data/ko.json (id -> Korean name)
-// Dictionary-based translation of the exercise names. Phrases first (longest match), then words.
-import fs from "node:fs";
-
-const root = new URL("..", import.meta.url);
-const items = JSON.parse(fs.readFileSync(new URL("data/exercises.json", root), "utf8"));
-
+// Dictionary-based Korean names for exercise names (English words/phrases -> Korean).
+// Unknown words stay in English. Phrases are matched first (longest match), then single words.
 const PHRASES = {
   "one arm": "한 팔", "one-arm": "한 팔", "one leg": "한 다리", "one-leg": "한 다리",
   "single arm": "한 팔", "single leg": "한 다리", "single-arm": "한 팔", "single-leg": "한 다리",
@@ -15,7 +10,7 @@ const PHRASES = {
   "bench press": "벤치프레스", "shoulder press": "숄더프레스", "military press": "밀리터리 프레스",
   "leg press": "레그프레스", "calf raise": "카프 레이즈", "calf raises": "카프 레이즈",
   "lat pulldown": "랫풀다운", "pull-down": "풀다운", "pull down": "풀다운", "pull-up": "풀업", "pull up": "풀업",
-  "push-up": "푸쉬업", "push up": "푸쉬업", "push-ups": "푸쉬업", "sit-up": "싯업", "sit up": "싯업", "sit-ups": "싯업",
+  "push ups": "푸쉬업", "pull ups": "풀업", "pull-ups": "풀업", "sit ups": "싯업", "chin ups": "친업", "push-up": "푸쉬업", "push up": "푸쉬업", "push-ups": "푸쉬업", "sit-up": "싯업", "sit up": "싯업", "sit-ups": "싯업",
   "chin-up": "친업", "chin up": "친업", "bent over": "벤트오버", "bent-over": "벤트오버",
   "romanian deadlift": "루마니안 데드리프트", "stiff-legged": "스티프 레그", "stiff legged": "스티프 레그",
   "good morning": "굿모닝", "good mornings": "굿모닝", "smith machine": "스미스 머신", "e-z curl bar": "EZ바",
@@ -104,7 +99,21 @@ const WORDS = {
   touches: "터치", towel: "타월", star: "스타", mill: "밀", stomach: "복부", vacuum: "배큠", superman: "슈퍼맨",
   fallout: "폴아웃", svend: "스벤드", tate: "테이트", straddle: "스트래들", tire: "타이어", torso: "상체", trail: "트레일",
   trap: "승모근", underhand: "언더핸드", grab: "그랩", upward: "업워드", vertical: "수직", sissy: "시시", wind: "윈드",
-  sprinting: "스프린트", yoke: "요크", zercher: "저처", "180's": "180도",  halo: "헤일로",  world: "월드", greatest: "그레이티스트", bent: "벤트", smr: "(폼롤러)", skipping: "스키핑", "90": "90", "3": "3", "4": "4", "8": "8",
+  sprinting: "스프린트", yoke: "요크", zercher: "저처", "180's": "180도",  halo: "헤일로",  world: "월드", greatest: "그레이티스트",   abduction: "외전", dancer: "댄서", hold: "홀드", banded: "밴드", dog: "독", trx: "TRX", dome: "돔", pilates: "필라테스", supported: "서포티드", loaded: "중량", bulgarian: "불가리안",
+  fold: "폴드", stand: "스탠드", copenhagen: "코펜하겐", kickstand: "킥스탠드", pause: "포즈", paused: "포즈", planche: "플란체", warrior: "워리어",
+  archer: "아처", lever: "레버", clamshell: "클램쉘", clamshells: "클램쉘", fire: "파이어", hydrant: "하이드런트", battle: "배틀", hollow: "할로우",
+  bird: "버드", "captain's": "캡틴", cow: "카우", crescent: "크레센트", drive: "드라이브", flag: "플래그", lean: "린", nordic: "노르딕",
+  roll: "롤", spine: "척추", tabletop: "테이블탑", revolved: "리볼브드", flow: "플로우", thread: "스레드", needle: "니들", switch: "스위치",
+  terminal: "터미널", couch: "카우치", bicycle: "바이시클", boat: "보트", bow: "보우", burpees: "버피", camel: "카멜", cheat: "치팅",
+  clap: "클랩", cobra: "코브라", commando: "코만도", cossack: "코삭", crab: "크랩", crow: "크로우", cycling: "사이클링", somersault: "공중제비",
+  deep: "딥", diamond: "다이아몬드", dolphin: "돌핀", doorway: "문틀", pedal: "페달", dragon: "드래곤", eagle: "이글", easy: "이지", angle: "앵글",
+  fish: "피시", flexed: "굴곡", garland: "갈란드", rock: "락", moon: "문", happy: "해피", baby: "베이비", flicks: "플릭", hero: "히어로", hex: "헥스",
+  horizontal: "수평", human: "휴먼", jacks: "잭", offset: "오프셋", rotational: "회전", lizard: "리저드", negative: "네거티브", pec: "가슴", deck: "덱",
+  pendlay: "펜들레이", pigeon: "피존", plow: "플로우", pseudo: "슈도", puppy: "퍼피", reclined: "리클라인드", pulses: "펄스", pulse: "펄스", support: "서포트",
+  rings: "링", corpse: "시체", shrimp: "슈림프", rdl: "루마니안 데드리프트", six: "식스", inch: "인치", skierg: "스키에르그", sphinx: "스핑크스",
+  spiderman: "스파이더맨", spoto: "스포토", stair: "계단", climber: "클라이머", strict: "스트릭트", suitcase: "수트케이스", windshield: "와이퍼",
+  shoulderstand: "숄더스탠드", tandem: "탠덤", thoracic: "흉추", three: "쓰리", toes: "발끝", tree: "트리", triangle: "삼각", iii: "III", ii: "II", bilateral: "양측",
+  bent: "벤트", smr: "(폼롤러)", skipping: "스키핑", "90": "90", "3": "3", "4": "4", "8": "8",
 };
 
 function translate(name) {
@@ -124,11 +133,6 @@ function translate(name) {
 }
 const PHRASES_VALUES = new Set(Object.values(PHRASES));
 
-const ko = {};
-let leftover = 0;
-for (const it of items) {
-  ko[it.id] = translate(it.name) || it.name;
-  if (/[a-z]{3,}/i.test(ko[it.id].replace(/EZ|IT|JM|T바|V/g, ""))) leftover++;
+export function koName(name) {
+  return translate(name) || name;
 }
-fs.writeFileSync(new URL("data/ko.json", root), JSON.stringify(ko, null, 0));
-console.log("translated:", Object.keys(ko).length, "with leftover English:", leftover);

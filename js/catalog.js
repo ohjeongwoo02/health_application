@@ -1,7 +1,9 @@
+import { REPDB_URL, fromRepdb } from "./repdb.js";
+
 export async function loadCatalog(fetchFn) {
-  const res = await fetchFn("data/exercises.json");
+  const res = await fetchFn(REPDB_URL);
   if (!res.ok) throw new Error("catalog load failed");
-  return res.json();
+  return fromRepdb((await res.json()).exercises);
 }
 
 export function filterCatalog(items, opts = {}) {

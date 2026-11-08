@@ -16,33 +16,35 @@ export function render(root, ctx) {
   });
   const chips = h("div", { class: "chips" });
   const list = h("div", { class: "pick-list" });
+  let catalog = [];
+  let status = "loading";
 
   function pick(it) {
     const st = ctx.getState();
     const exercises = st.exercises.some((e) => e.id === it.id)
       ? st.exercises
-      : [...st.exercises, { id: it.id, name: it.name, koName: it.koName, equipment: it.equipment, bodyPart: it.bodyPart, repdb: it.repdb, ...defaultSettings(it.equipment) }];
+      : [...st.exercises, { id: it.id, name: it.name, koName: it.koName, equipment: it.equipment, bodyPart: it.bodyPart, iconPart: it.iconPart, repdb: it.repdb, ...defaultSettings(it.equipment) }];
     const ids = st.today.exerciseIds.includes(it.id) ? st.today.exerciseIds : [...st.today.exerciseIds, it.id];
     ctx.setState({ ...st, exercises, today: { ...st.today, exerciseIds: ids } });
     ctx.navigate("#/");
   }
 
   function drawChips() {
-    chips.replaceChildren(...["all", ...bodyParts(ctx.catalog)].map((p) =>
+    chips.replaceChildren(...["all", ...bodyParts(catalog)].map((p) =>
       h("button", { class: "chip" + (p === part ? " on" : ""), onclick: () => { part = p; shown = PAGE; draw(); } },
         p === "all" ? "전체" : bodyPartLabel(p))));
   }
 
   function draw() {
     drawChips();
-    const found = filterCatalog(ctx.catalog, { bodyPart: part, query });
+    const found = filterCatalog(catalog, { bodyPart: part, query });
     const rows = found.slice(0, shown).map((it) =>
       h("button", { class: "card row pick", onclick: () => pick(it) },
         thumb(it),
         h("div", {}, h("div", { class: "title" }, it.name), h("small", { class: "ko" }, it.koName))));
     list.replaceChildren(
       ...rows,
-      found.length === 0 ? h("p", { class: "empty" }, ctx.catalogError ? "운동 목록을 불러오지 못했습니다." : "검색 결과가 없습니다.") : null,
+      found.length === 0 ? h("p", { class: "empty" }, status === "loading" ? "운동 목록을 불러오는 중…" : status === "error" ? "운동 목록을 불러오지 못했습니다. 인터넷 연결을 확인해 주세요." : "검색 결과가 없습니다.") : null,
       found.length > shown ? h("button", { class: "btn", onclick: () => { shown += PAGE; draw(); } }, `더 보기 (${found.length - shown}개 남음)`) : null,
     );
   }
@@ -52,4 +54,5 @@ export function render(root, ctx) {
     input, chips, list,
   );
   draw();
+  ctx.getCatalog().then((items) => { catalog = items; status = "ok"; draw(); }).catch(() => { status = "error"; draw(); });
 }

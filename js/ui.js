@@ -34,7 +34,7 @@ export function icon(part) {
 // RepDB image if we have one for this exercise, otherwise the body-part icon.
 export function thumb(ex) {
   const url = imageUrl(ex);
-  if (!url) return icon(ex.bodyPart);
+  if (!url) return icon(ex.iconPart ?? ex.bodyPart);
   const wrap = document.createElement("span");
   wrap.className = "thumb";
   const img = document.createElement("img");
@@ -42,7 +42,7 @@ export function thumb(ex) {
   img.loading = "lazy";
   img.crossOrigin = "anonymous";
   img.referrerPolicy = "no-referrer";
-  img.onerror = () => wrap.replaceChildren(icon(ex.bodyPart));
+  img.onerror = () => wrap.replaceChildren(icon(ex.iconPart ?? ex.bodyPart));
   img.src = url;
   wrap.append(img);
   return wrap;
