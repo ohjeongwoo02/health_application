@@ -16,6 +16,12 @@ jobs:
       - run: npm install
       - run: node scripts/prepare-www.mjs
       - run: npx cap add ios
+      - name: Use our app icon
+        run: |
+          set -e
+          ICON_DIR=ios/App/App/Assets.xcassets/AppIcon.appiconset
+          ls "$ICON_DIR"
+          cp icons/icon-1024.png "$ICON_DIR/AppIcon-512@2x.png"
       - run: npx cap sync ios
       - name: Build unsigned archive
         run: |
