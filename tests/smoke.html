@@ -1,0 +1,48 @@
+<!doctype html>
+<meta charset="utf-8">
+<base href="../">
+<main id="app"></main>
+<pre id="out">RUNNING</pre>
+<script type="module">
+const out = []; window.addEventListener("error", (e) => out.push("ERROR " + e.message));
+const ok = (name, cond) => out.push((cond ? "PASS " : "FAIL ") + name);
+const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
+try {
+  localStorage.clear();
+  localStorage.setItem("overload-v1", JSON.stringify({
+    version: 1,
+    exercises: [{ id: "bench", name: "Barbell Bench Press", koName: "바벨 벤치프레스", equipment: "barbell", targetReps: 12, increment: 5, qualifyingSets: 3, restSeconds: 90 }],
+    today: { date: new Date().toISOString().slice(0, 10), exerciseIds: ["bench"] },
+    records: [{ exerciseId: "bench", date: "2026-11-01", savedAt: 1, sets: [12, 12, 12, 9].map((r) => ({ weight: 60, reps: r })) }],
+  }));
+  location.hash = "#/";
+  await import("./js/app.js");
+  await sleep(300);
+  const app = document.getElementById("app");
+  ok("today shows recommendation 65", app.textContent.includes("다음 추천: 65 kg"));
+  location.hash = "#/session/bench";
+  await sleep(100);
+  ok("session prefilled 65", app.querySelectorAll("input.num")[0].value === "65");
+  const nums = app.querySelectorAll("input.num");
+  [12, 12, 11, 10].forEach((r, i) => { nums[i * 2 + 1].value = String(r); });
+  app.querySelector("input.done").click();
+  await sleep(300);
+  ok("timer shown after set done", !app.querySelector(".timer").hidden && app.querySelector(".timer").textContent.startsWith("휴식 1:"));
+  [...app.querySelectorAll("button")].find((b) => b.textContent === "저장").click();
+  await sleep(100);
+  ok("saved and back on today, still 65 (2 hits only? 65x12,12 =>2)", location.hash === "#/" && app.textContent.includes("다음 추천: 65 kg"));
+  const st = JSON.parse(localStorage.getItem("overload-v1"));
+  ok("record stored", st.records.length === 2);
+  location.hash = "#/pick"; await sleep(200);
+  ok("picker lists exercises with images", app.querySelectorAll(".pick img").length > 0);
+  const search = app.querySelector("input.search"); search.value = "벤치"; search.dispatchEvent(new Event("input")); await sleep(100);
+  ok("korean search narrows list", app.querySelectorAll(".pick").length > 0 && app.querySelectorAll(".pick").length < 60);
+  search.value = "zzzzzz"; search.dispatchEvent(new Event("input")); await sleep(100);
+  ok("no result message", app.textContent.includes("검색 결과가 없습니다"));
+  location.hash = "#/manage"; await sleep(100);
+  ok("manage renders fields", app.querySelectorAll(".grid input").length === 4);
+  location.hash = "#/history"; await sleep(100);
+  ok("history lists 2 records", app.querySelectorAll(".card").length === 2);
+} catch (e) { out.push("FAIL exception " + e.message + " " + e.stack); }
+document.getElementById("out").textContent = out.join("\n") + "\nDONE";
+</script>
