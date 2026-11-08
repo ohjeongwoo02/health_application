@@ -36,3 +36,34 @@ test("bodyPart + query combine; 'all' means all", () => {
 test("bodyParts unique and sorted", () => {
   assert.deepEqual(bodyParts(items), ["chest", "quadriceps", "shoulders"]);
 });
+
+import { loadCatalog } from "../js/catalog.js";
+
+const repdbJson = { exercises: [{ id: "bench-press", name_en: "Bench Press", body_part: "chest", primary_muscles: ["pectoralis_major"], images: { flat: { peak: "images/flat/bench-press-peak.webp" } } }] };
+const okFetch = () => { okFetch.calls++; return Promise.resolve({ ok: true, json: () => Promise.resolve(repdbJson) }); };
+const badFetch = () => { badFetch.calls++; return Promise.reject(new Error("offline")); };
+const memStorage = () => { const m = {}; return { getItem: (k) => m[k] ?? null, setItem: (k, v) => { m[k] = v; } }; };
+
+test("loadCatalog: first load fetches and caches; later loads use the cache without fetching", async () => {
+  okFetch.calls = 0; badFetch.calls = 0;
+  const st = memStorage();
+  const a = await loadCatalog(okFetch, st);
+  assert.equal(a[0].id, "bench-press");
+  assert.equal(okFetch.calls, 1);
+  const b = await loadCatalog(badFetch, st);
+  assert.deepEqual(b, a);
+  assert.equal(badFetch.calls, 0);
+});
+
+test("loadCatalog: offline with nothing cached rejects; broken cache is ignored", async () => {
+  await assert.rejects(() => loadCatalog(badFetch, memStorage()));
+  const st = memStorage();
+  st.setItem("overload-catalog-v1", "{not json");
+  const a = await loadCatalog(okFetch, st);
+  assert.equal(a[0].id, "bench-press");
+});
+
+test("loadCatalog: works without storage", async () => {
+  const a = await loadCatalog(okFetch);
+  assert.equal(a.length, 1);
+});

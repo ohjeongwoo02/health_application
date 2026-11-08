@@ -33,4 +33,5 @@ fs.mkdirSync("icons", { recursive: true });
 fs.writeFileSync("icons/icon-192.png", png(192));
 fs.writeFileSync("icons/icon-512.png", png(512));
 fs.writeFileSync("icons/apple-touch-icon.png", png(180));
+fs.writeFileSync("icons/icon-1024.png", png(1024)); // iOS app icon (no alpha)
 console.log("icons written");

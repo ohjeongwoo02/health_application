@@ -31,7 +31,7 @@ const ctx = {
   },
   // RepDB exercise list: loaded on first use (2.6MB), then cached by the service worker.
   getCatalog() {
-    if (!catalogPromise) catalogPromise = loadCatalog(fetch).catch((e) => { catalogPromise = null; throw e; });
+    if (!catalogPromise) catalogPromise = loadCatalog(fetch, storage).catch((e) => { catalogPromise = null; throw e; });
     return catalogPromise;
   },
   params: [],
