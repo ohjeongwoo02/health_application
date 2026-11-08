@@ -1,3 +1,5 @@
+import { bodyIconSvg } from "./bodyicon.js";
+
 export function h(tag, attrs = {}, ...kids) {
   const el = document.createElement(tag);
   for (const [k, v] of Object.entries(attrs || {})) {
@@ -19,6 +21,13 @@ export function h(tag, attrs = {}, ...kids) {
 export function exName(ex) {
   const ko = ex.koName && ex.koName !== ex.name ? h("small", { class: "ko" }, ex.koName) : null;
   return [ex.name, ko];
+}
+
+export function icon(part) {
+  const el = document.createElement("span");
+  el.className = "icon";
+  el.innerHTML = bodyIconSvg(part);
+  return el;
 }
 
 export function todayStr() {

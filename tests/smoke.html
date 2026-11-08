@@ -34,7 +34,7 @@ try {
   const st = JSON.parse(localStorage.getItem("overload-v1"));
   ok("record stored", st.records.length === 2);
   location.hash = "#/pick"; await sleep(200);
-  ok("picker lists exercises with images", app.querySelectorAll(".pick img").length > 0);
+  ok("picker lists exercises with body icons", app.querySelectorAll(".pick svg.body-icon").length > 0);
   const search = app.querySelector("input.search"); search.value = "벤치"; search.dispatchEvent(new Event("input")); await sleep(100);
   ok("korean search narrows list", app.querySelectorAll(".pick").length > 0 && app.querySelectorAll(".pick").length < 60);
   search.value = "zzzzzz"; search.dispatchEvent(new Event("input")); await sleep(100);

@@ -1,4 +1,4 @@
-import { h } from "../ui.js";
+import { h, icon } from "../ui.js";
 import { filterCatalog, bodyParts } from "../catalog.js";
 import { bodyPartLabel } from "../i18n.js";
 import { defaultSettings } from "../recommend.js";
@@ -21,7 +21,7 @@ export function render(root, ctx) {
     const st = ctx.getState();
     const exercises = st.exercises.some((e) => e.id === it.id)
       ? st.exercises
-      : [...st.exercises, { id: it.id, name: it.name, koName: it.koName, equipment: it.equipment, ...defaultSettings(it.equipment) }];
+      : [...st.exercises, { id: it.id, name: it.name, koName: it.koName, equipment: it.equipment, bodyPart: it.bodyPart, ...defaultSettings(it.equipment) }];
     const ids = st.today.exerciseIds.includes(it.id) ? st.today.exerciseIds : [...st.today.exerciseIds, it.id];
     ctx.setState({ ...st, exercises, today: { ...st.today, exerciseIds: ids } });
     ctx.navigate("#/");
@@ -38,7 +38,7 @@ export function render(root, ctx) {
     const found = filterCatalog(ctx.catalog, { bodyPart: part, query });
     const rows = found.slice(0, shown).map((it) =>
       h("button", { class: "card row pick", onclick: () => pick(it) },
-        h("img", { src: it.image, alt: "", loading: "lazy", width: 80, height: 54 }),
+        icon(it.bodyPart),
         h("div", {}, h("div", { class: "title" }, it.name), h("small", { class: "ko" }, it.koName))));
     list.replaceChildren(
       ...rows,

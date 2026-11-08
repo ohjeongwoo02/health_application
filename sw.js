@@ -1,7 +1,7 @@
-const CACHE = "overload-v1";
+const CACHE = "overload-v2";
 const SHELL = [
   "./", "index.html", "manifest.webmanifest", "css/app.css",
-  "js/app.js", "js/store.js", "js/recommend.js", "js/catalog.js", "js/timer.js", "js/i18n.js", "js/ui.js",
+  "js/app.js", "js/store.js", "js/recommend.js", "js/catalog.js", "js/timer.js", "js/i18n.js", "js/ui.js", "js/bodyicon.js",
   "js/screens/today.js", "js/screens/picker.js", "js/screens/session.js", "js/screens/manage.js", "js/screens/history.js",
   "data/exercises.json", "icons/icon-192.png", "icons/icon-512.png", "icons/apple-touch-icon.png",
 ];
